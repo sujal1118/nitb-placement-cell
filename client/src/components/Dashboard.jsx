@@ -22,7 +22,7 @@ function Dashboard() {
 
   const fetchDrives = async (branch) => {
     try {
-      const res = await axios.get('http://localhost:5001/api/drives');
+      const res = await axios.get('https://nitb-placement-cell.onrender.com/api/drives');
       const eligible = res.data.filter(
         (d) => d.company && d.company.eligibleBranches.includes(branch)
       );

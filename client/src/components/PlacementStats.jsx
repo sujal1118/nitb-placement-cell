@@ -11,7 +11,7 @@ function PlacementStats() {
 
   const fetchStats = async () => {
     try {
-      const res = await axios.get('http://localhost:5001/api/students/stats/branches');
+      const res = await axios.get('https://nitb-placement-cell.onrender.com/api/students/stats/branches');
       setStats(res.data);
     } catch (err) {
       console.log('Error fetching stats', err);

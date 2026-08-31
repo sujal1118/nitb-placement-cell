@@ -13,7 +13,7 @@ function Signup() {
     e.preventDefault();
     setError('');
     try {
-      await axios.post('http://localhost:5001/api/students/signup', form);
+      await axios.post('https://nitb-placement-cell.onrender.com/api/students/signup', form);
       alert('Signup successful! Please login.');
       navigate('/');
     } catch (err) {

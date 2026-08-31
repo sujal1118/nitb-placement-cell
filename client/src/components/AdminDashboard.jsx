@@ -71,7 +71,7 @@ function AdminDashboard() {
   const handleAddCompany = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5001/api/companies', {
+      await axios.post('https://nitb-placement-cell.onrender.com/api/companies', {
         name: companyForm.name,
         role: companyForm.role,
         package: companyForm.package,
@@ -91,7 +91,7 @@ function AdminDashboard() {
       return;
     }
     try {
-      await axios.post('http://localhost:5001/api/drives', {
+      await axios.post('https://nitb-placement-cell.onrender.com/api/drives', {
         company: driveForm.company,
         deadline: driveForm.deadline,
         registrationLink: driveForm.registrationLink

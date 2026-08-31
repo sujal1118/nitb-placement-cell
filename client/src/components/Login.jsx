@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-
+import { useNavigate, Link } from 'react-router-dom';
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -12,7 +11,7 @@ function Login() {
     e.preventDefault();
     setError('');
     try {
-      const res = await axios.post('http://localhost:5001/api/students/login', {
+      const res = await axios.post('https://nitb-placement-cell.onrender.com/api/students/login', {
         email,
         password
       });
@@ -78,6 +77,12 @@ function Login() {
               Login
             </button>
           </form>
+          <p className="text-center text-sm text-gray-500 mt-4 font-['Inter']">
+  New here?{' '}
+  <Link to="/signup" className="text-[#0F2545] font-medium hover:underline">
+    Create an account
+  </Link>
+</p>
         </div>
 
         <p className="text-center text-xs text-gray-400 font-['Inter'] mt-6">
