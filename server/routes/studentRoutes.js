@@ -98,4 +98,33 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// Public branch-wise placement stats
+router.get('/stats/branches', async (req, res) => {
+  try {
+    const students = await Student.find();
+    const branchStats = {};
+
+    students.forEach((s) => {
+      if (!branchStats[s.branch]) {
+        branchStats[s.branch] = { total: 0, placed: 0 };
+      }
+      branchStats[s.branch].total += 1;
+      if (s.isPlaced) {
+        branchStats[s.branch].placed += 1;
+      }
+    });
+
+    const result = Object.keys(branchStats).map((branch) => ({
+      branch,
+      total: branchStats[branch].total,
+      placed: branchStats[branch].placed,
+      percentage: Math.round((branchStats[branch].placed / branchStats[branch].total) * 100)
+    }));
+
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
