@@ -68,4 +68,39 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+// Company-wise analytics
+router.get('/stats/companies', async (req, res) => {
+  try {
+    const applications = await Application.find().populate({
+      path: 'drive',
+      populate: { path: 'company' }
+    });
+
+    const stats = {};
+
+    applications.forEach((app) => {
+      if (!app.drive || !app.drive.company) return;
+      const companyName = app.drive.company.name;
+
+      if (!stats[companyName]) {
+        stats[companyName] = { applied: 0, selected: 0 };
+      }
+      stats[companyName].applied += 1;
+      if (app.status === 'selected') {
+        stats[companyName].selected += 1;
+      }
+    });
+
+    const result = Object.keys(stats).map((name) => ({
+      company: name,
+      applied: stats[name].applied,
+      selected: stats[name].selected
+    }));
+
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
