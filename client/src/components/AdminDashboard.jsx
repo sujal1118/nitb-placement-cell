@@ -11,6 +11,8 @@ function AdminDashboard() {
     name: '', role: '', package: '', eligibleBranches: ''
   });
   const [driveForm, setDriveForm] = useState({ company: '', deadline: '', registrationLink: '' });
+  const [selectedDrive, setSelectedDrive] = useState(null);
+const [driveApplications, setDriveApplications] = useState([]);
 
   useEffect(() => {
     if (localStorage.getItem('isAdmin') !== 'true') {
@@ -30,6 +32,28 @@ function AdminDashboard() {
     const res = await axios.get('http://localhost:5001/api/drives');
     setDrives(res.data);
   };
+  const viewApplications = async (driveId) => {
+  try {
+    const res = await axios.get(`http://localhost:5001/api/applications/drive/${driveId}`);
+    setDriveApplications(res.data);
+    setSelectedDrive(driveId);
+  } catch (err) {
+    console.log('Error fetching applications', err);
+  }
+};
+
+
+const markSelected = async (applicationId) => {
+  try {
+    await axios.put(`http://localhost:5001/api/applications/${applicationId}`, {
+      status: 'selected'
+    });
+    alert('Student marked as selected!');
+    viewApplications(selectedDrive);
+  } catch (err) {
+    alert('Error updating status');
+  }
+};
 
   const handleAddCompany = async (e) => {
     e.preventDefault();
@@ -174,18 +198,64 @@ function AdminDashboard() {
           </div>
         </div>
 
-        {/* Drives List */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="font-['Poppins'] font-semibold text-lg text-[#1E1E24] mb-4">Drives</h2>
-          <div className="space-y-2">
-            {drives.map((d) => (
-              <div key={d._id} className="flex justify-between text-sm font-['Inter'] border-b border-gray-100 py-2">
-                <span>{d.company?.name || 'Unknown'}</span>
-                <span className="text-gray-500">{new Date(d.deadline).toDateString()}</span>
-              </div>
-            ))}
-          </div>
+      {/* Drives List */}
+<div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+  <h2 className="font-['Poppins'] font-semibold text-lg text-[#1E1E24] mb-4">Drives</h2>
+  <div className="space-y-2">
+    {drives.map((d) => (
+      <div key={d._id} className="flex justify-between items-center text-sm font-['Inter'] border-b border-gray-100 py-2">
+        <div>
+          <span>{d.company?.name || 'Unknown'}</span>
+          <span className="text-gray-500 ml-2">{new Date(d.deadline).toDateString()}</span>
         </div>
+        <button
+          onClick={() => viewApplications(d._id)}
+          className="text-[#0F2545] font-medium hover:underline"
+        >
+          View Applications
+        </button>
+      </div>
+    ))}
+  </div>
+</div>
+
+{/* Applications for selected drive */}
+{selectedDrive && (
+  <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <h2 className="font-['Poppins'] font-semibold text-lg text-[#1E1E24] mb-4">Applications</h2>
+    {driveApplications.length === 0 ? (
+      <p className="font-['Inter'] text-sm text-gray-400 text-center py-6">
+        No applications yet for this drive.
+      </p>
+    ) : (
+      <div className="space-y-2">
+        {driveApplications.map((a) => (
+          <div key={a._id} className="flex justify-between items-center text-sm font-['Inter'] border-b border-gray-100 py-2">
+            <div>
+              <span className="font-medium">{a.student?.name}</span>
+              <span className="text-gray-500 ml-2">{a.student?.rollNumber}</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className={`text-xs px-2 py-1 rounded-full ${
+                a.status === 'selected' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+              }`}>
+                {a.status}
+              </span>
+              {a.status !== 'selected' && (
+                <button
+                  onClick={() => markSelected(a._id)}
+                  className="text-white bg-green-600 hover:bg-green-700 px-3 py-1 rounded-lg text-xs"
+                >
+                  Mark Selected
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+)}
 
       </div>
     </div>

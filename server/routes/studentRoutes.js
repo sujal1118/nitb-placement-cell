@@ -2,6 +2,28 @@ const express = require('express');
 const router = express.Router();
 const Student = require('../models/Student');
 
+// SIGNUP route
+router.post('/signup', async (req, res) => {
+  try {
+    const { name, rollNumber, branch, email, password } = req.body;
+
+    if (!email.endsWith('@stu.manit.ac.in')) {
+      return res.status(400).json({ error: 'Only MANIT college email addresses are allowed' });
+    }
+
+    const existing = await Student.findOne({ email });
+    if (existing) {
+      return res.status(400).json({ error: 'Email already registered' });
+    }
+
+    const newStudent = new Student({ name, rollNumber, branch, email, password });
+    const saved = await newStudent.save();
+    res.status(201).json({ message: 'Signup successful', student: saved });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 // LOGIN route
 router.post('/login', async (req, res) => {
   try {
